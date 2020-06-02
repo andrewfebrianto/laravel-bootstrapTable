@@ -25,11 +25,14 @@ Data Products
                 <button type="button" id="btn-add" class="btn btn-app btn-dark" title="Add"
                     onclick="window.location.href='{{route('products.create')}}'"><i
                         class="fa fa-plus-circle"></i>Add</button>
-                <button type="button" id="btn-remove" class="btn btn-app btn-dark is-disabled" title="Remove" data-url="{{ route("products.destroySelected") }}" data-id-table="#table-products" data-confirm="Are you sure remove this data?" disabled><i class="fa fa-trash"></i>Remove</button>
+                <button type="button" id="btn-remove" class="btn btn-app btn-dark is-disabled" title="Remove"
+                    data-url="{{ route("products.destroySelected") }}" data-id-table="#table-products"
+                    data-confirm="Are you sure remove this data?" disabled><i class="fa fa-trash"></i>Remove</button>
             </div>
         </div>
 
-        <table id="table-products" data-url="{{url('/products/list')}}" data-advanced-search="true" data-id-table="advancedTable" data-sort-name="product_code" data-sort-order="asc">
+        <table id="table-products" data-url="{{url('/products/list')}}" data-advanced-search="true"
+            data-id-table="advancedTable" data-sort-name="product_code" data-sort-order="asc">
             <thead>
                 <tr>
                     <th data-field="check" data-checkbox="true"></th>
@@ -43,6 +46,27 @@ Data Products
                 </tr>
             </thead>
         </table>
+    </div>
+</div>
+
+<!--modal detail-->
+<div class="modal fade" id="detailModal" tabindex="-1" role="dialog" aria-labelledby="detailModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Detail Product</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -67,9 +91,9 @@ Data Products
         routeDelete = routeDelete.replace(':id', row.id);
 
         let button = [
-            '<button class="dropdown-item" type="button" onclick="window.location.href=\'' + routeEdit +
-            '\'"><i class="c-icon mfe-2 far fa-edit"></i>Edit</button>',
-            '<button class="dropdown-item" data-id-table="#table-products" data-url="' + routeDelete + '" data-confirm="Are you sure remove this data?"><i class="c-icon mfe-2 far fa-trash-alt"></i>Hapus</button>'
+            `<button class="dropdown-item" type="button" data-toggle="modal" onclick="showDetail(${row.id})" data-target="#detailModal"><i class="c-icon mfe-2 fa fa-bars"></i>Detail</button>`,
+            `<button class="dropdown-item" type="button" onclick="window.location.href='${routeEdit}''"><i class="c-icon mfe-2 far fa-edit"></i>Edit</button>`,
+            `<button class="dropdown-item" data-id-table="#table-products" data-url="${routeDelete}" data-confirm="Are you sure remove this data?"><i class="c-icon mfe-2 far fa-trash-alt"></i>Hapus</button>`
         ];
 
         return actLayout(button);
@@ -77,6 +101,20 @@ Data Products
 
     function numRow(value, row, index) {
         return getNumRow('#table-products') + index;
+    }
+
+    function showDetail(id) {
+        let routeDetail = '{{ route("products.show", ":id") }}';
+        routeDetail = routeDetail.replace(':id', id);
+        
+        $.ajax({
+            type: 'GET',
+            url: routeDetail,
+            success: function (data) {
+                $('#detailModal').find('.modal-body').html(data);
+                $('#detailModal').modal({show: true});
+            }
+        });
     }
 
 </script>

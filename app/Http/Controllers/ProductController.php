@@ -46,14 +46,49 @@ class ProductController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  Product  $products
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(Product $product)
     {
-        //
+        $product = Product::findOrFail($product->id);
+        
+        $html = '<div>
+                    <div class="form-group row">
+                        <label for="product_code" class="col-sm-4 col-form-label">Product Code</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="product_code" readonly class="form-control-plaintext" value="'. $product->product_code.'">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="product_name" class="col-sm-4 col-form-label">Product Name</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="product_name" readonly class="form-control-plaintext" value="'. $product->product_name.'">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="qty" class="col-sm-4 col-form-label">Qty</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="product_code" readonly class="form-control-plaintext" value="'. $product->qty.'">
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="price" class="col-sm-4 col-form-label">Price</label>
+                        <div class="col-sm-8">
+                            <input type="text" name="price" readonly class="form-control-plaintext" value="'. $product->price.'">
+                        </div>
+                    </div>
+                </div>';
+
+        return $html; 
     }
 
+    /**
+     * Display a listing of the resource to Bootstrap Table
+     *
+     * @param Request $request
+     * @return JSON
+     */
     public function list(Request $request) {
         $query = DB::table('product')
             ->select('id','product_code', 'product_name', 'qty', 'price');
@@ -64,7 +99,7 @@ class ProductController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  Product  $products
      * @return \Illuminate\Http\Response
      */
     public function edit(Product $product)
@@ -76,7 +111,7 @@ class ProductController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  Product  $products
      * @return \Illuminate\Http\Response
      */
     public function update(ProductRequest $request, Product $product)
@@ -89,7 +124,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  Product  $products
      * @return \Illuminate\Http\Response
      */
     public function destroy(Product $product)
