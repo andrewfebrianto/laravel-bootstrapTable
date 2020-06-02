@@ -25,7 +25,7 @@ Data Products
                 <button type="button" id="btn-add" class="btn btn-app btn-dark" title="Add"
                     onclick="window.location.href='{{route('products.create')}}'"><i
                         class="fa fa-plus-circle"></i>Add</button>
-                <button type="button" id="btn-remove" class="btn btn-app btn-dark is-disabled" title="Remove" data-url="{{ route("products.destroySelected", ":id") }}" data-id-table="#table-products" data-confirm="Are you sure remove this data?" disabled><i class="fa fa-trash"></i>Remove</button>
+                <button type="button" id="btn-remove" class="btn btn-app btn-dark is-disabled" title="Remove" data-url="{{ route("products.destroySelected") }}" data-id-table="#table-products" data-confirm="Are you sure remove this data?" disabled><i class="fa fa-trash"></i>Remove</button>
             </div>
         </div>
 
@@ -61,10 +61,10 @@ Data Products
 
     function action(value, row, index) {
         let routeEdit = '{{ route("products.edit", ":id") }}';
-        routeEdit = routeEdit.replace(':id', row['id']);
+        routeEdit = routeEdit.replace(':id', row.id);
 
         let routeDelete = '{{ route("products.destroy", ":id") }}';
-        routeDelete = routeDelete.replace(':id', row['id']);
+        routeDelete = routeDelete.replace(':id', row.id);
 
         let button = [
             '<button class="dropdown-item" type="button" onclick="window.location.href=\'' + routeEdit +

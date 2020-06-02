@@ -5,9 +5,11 @@ $('.modal').on('hidden.coreui.modal', function () {
     }
 });
 
-toastr.options = {
-    "closeButton": true,
-    "timeOut": "2000"
+if (typeof (toastr) != "undefined") {
+    toastr.options = {
+        "closeButton": true,
+        "timeOut": "2000"
+    }
 }
 
 /*
@@ -20,19 +22,12 @@ function getNumRow(table) {
 }
 
 function actLayout(value) {
-    let buttons = '';
-    buttons += '<div class = "dropdown" >' +
-        '<button class = "btn btn-ghost-primary" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-expanded = "false">' +
-        '<i class ="fas fa-ellipsis-v"></i></button>' +
-        '<div class = "dropdown-menu" aria-labelledby = "dropdownMenuButton">';
-    if (Array.isArray(value)) {
-        buttons += value.join('');
-    } else {
-        buttons += value;
-    }
-
-    buttons += '</div></div>';
-    return buttons
+    return `<div class = "dropdown" >
+        <button class = "btn btn-ghost-primary" type = "button" id = "dropdownMenuButton" data-toggle = "dropdown" aria-expanded = "false">
+        <i class ="fas fa-ellipsis-v"></i></button>
+        <div class = "dropdown-menu" aria-labelledby = "dropdownMenuButton"> 
+        ${((Array.isArray(value)) ? value.join('') : value)}
+        </div></div>`;
 }
 
 function loadBootstrapTable(idTable = '#table') {
@@ -64,7 +59,7 @@ function loadBootstrapTable(idTable = '#table') {
         },
         exportDataType: "all",
         exportTypes: ['csv', 'excel'],
-        exportOptions:{
+        exportOptions: {
             ignoreColumn: ['check', 'action']
         }
     });
@@ -90,32 +85,64 @@ function getSelected(table = '#table') {
     return ids;
 }
 
+/**
+ * Master for function confirm
+ * @param object options  
+ * @param mixed callback 
+ * 
+ * options =  {
+ *  title: "",
+ *  message: "",
+ *  type:  ""
+ *  confirmText: ""
+ * };
+ */
+function confirm(options, callback) {
+    Swal.fire({
+        title: (options.title != undefined) ? options.title : "",
+        text: (options.message != undefined) ? options.message : "",
+        type: (options.type != undefined) ? options.type : "",
+        showLoaderOnConfirm: true,
+        preConfirm: function () {
+            return new Promise(function (resolve) {
+                setTimeout(function () {
+                    resolve();
+                }, 500)
+            })
+        },
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: (options.confirmText != undefined) ? options.confirmText : "",
+        cancelButtonText: 'Tidak'
+    }).then(callback);
+}
+
 function confirmDelete() {
     $('button[data-confirm], a[data-confirm]').on('click', function () {
-        var table = '#table';
-        var ids = '';
+        let table = '#table';
+        let ids = '';
+        let params = '';
+
         table = ($(this).data('id-table') != undefined) ? $(this).data('id-table') : table;
-        ids = getSelected(table);
-        
-        Swal.fire({
-            title: "Peringatan",
-            text: $(this).data('confirm'),
-            type: "warning",
-            showLoaderOnConfirm: true,
-            preConfirm: function () {
-                return new Promise(function (resolve) {
-                    setTimeout(function () {
-                        resolve()
-                    }, 500)
-                })
-            },
-            showCancelButton: true,
-            confirmButtonColor: '#3085d6',
-            cancelButtonColor: '#d33',
-            confirmButtonText: 'Ya, Hapus!'
-        }).then((result) => {
+
+        let tableOptions = $(table).bootstrapTable('getOptions');
+
+        if (tableOptions.sidePagination == 'client') {
+            params = new URLSearchParams($(this).data('url').substring($(this).data('url').indexOf('?')));
+            ids = (getSelected(table).length > 0) ? getSelected(table) : params.get('id');
+        } else {
+            ids = getSelected(table);
+        }
+
+        confirm({
+            title: 'Peringatan',
+            message: $(this).data('confirm'),
+            type: 'warning',
+            confirmText: 'Ya, Hapus!'
+        }, (result) => {
             if (result.value) {
-                if ($(this).data('url') != undefined) {
+                if (tableOptions.sidePagination == "server") {
                     $.ajax({
                         type: 'DELETE',
                         url: $(this).data('url'),
@@ -132,14 +159,14 @@ function confirmDelete() {
                         }
                     });
                 } else {
-                    toastr.success('Data has been deleted');
+                    toastr.success('Data telah berhasil dihapus');
                     $(table).bootstrapTable('remove', {
                         field: 'id',
-                        values: ids.toString()
+                        values: ids
                     })
-                };
+                }
             }
-            $('.is-disabled').prop('disabled', true);
         });
+        $('.is-disabled').prop('disabled', true);
     });
 }
