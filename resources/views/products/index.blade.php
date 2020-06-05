@@ -92,7 +92,7 @@ Data Products
 
         let button = [
             `<button class="dropdown-item" type="button" data-toggle="modal" onclick="showDetail(${row.id})" data-target="#detailModal"><i class="c-icon mfe-2 fa fa-bars"></i>Detail</button>`,
-            `<button class="dropdown-item" type="button" onclick="window.location.href='${routeEdit}''"><i class="c-icon mfe-2 far fa-edit"></i>Edit</button>`,
+            `<button class="dropdown-item" type="button" onclick="window.location.href='${routeEdit}'"><i class="c-icon mfe-2 far fa-edit"></i>Edit</button>`,
             `<button class="dropdown-item" data-id-table="#table-products" data-url="${routeDelete}" data-confirm="Are you sure remove this data?"><i class="c-icon mfe-2 far fa-trash-alt"></i>Hapus</button>`
         ];
 
